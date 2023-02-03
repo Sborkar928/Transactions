@@ -1,23 +1,39 @@
-import logo from './logo.svg';
 import './App.css';
+import { useEffect, useState } from 'react';
+import * as transactionService from './transaction.service';
 
 function App() {
+  const [data, setData] = useState([]);
+  
+  useEffect( () => {
+    transactionService.getTransactions().then(res => {
+      let result = transactionService.rewardPerMonth(res.transactions);
+      setData(result);
+    });
+  },[]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="content" role="main">
+        {
+          Object.keys(data).map( user => {
+            return (
+              <div className="card" key={user}>
+                <div className="container">
+                <p>Name: {user}</p>
+                {
+                  Object.keys(data[user]).map(metric =>{
+                    return (
+                          <div key={metric}><b>{metric} :</b>{data[user][metric]}</div>
+                    )
+                  })
+                }
+              </div>
+              </div>
+            )
+          })
+        }
+    </div>
     </div>
   );
 }
